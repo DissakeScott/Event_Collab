@@ -1,0 +1,16 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: ticket-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:tickets_db}
+    username: ${DB_USER:eventcollab}
+    password: ${DB_PASS:eventcollab}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
