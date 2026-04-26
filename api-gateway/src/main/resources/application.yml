@@ -4,28 +4,93 @@ server:
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
+      # Configuration globale CORS
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      # Routes vers chaque microservice
       routes:
-        - id: user-service
-          uri: http://localhost:8081
+
+        # ── User Service ────────────────────────────────────────────────────
+        - id: user-service-auth
+          uri: http://${USER_SERVICE_HOST:localhost}:8081
           predicates:
-            - Path=/api/v1/auth/**, /api/v1/users/**
-        - id: event-service
-          uri: http://localhost:8082
+            - Path=/api/v1/auth/**
+          # Pas de filtre JWT — endpoints publics (register, login, refresh)
+
+        - id: user-service-users
+          uri: http://${USER_SERVICE_HOST:localhost}:8081
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - name: JwtAuthFilter
+
+        # ── Event Service ────────────────────────────────────────────────────
+        - id: event-service-public
+          uri: http://${EVENT_SERVICE_HOST:localhost}:8082
           predicates:
             - Path=/api/v1/events/**
+            - Method=GET
+          # Lecture publique sans JWT
+
+        - id: event-service-protected
+          uri: http://${EVENT_SERVICE_HOST:localhost}:8082
+          predicates:
+            - Path=/api/v1/events/**
+            - Method=POST,PUT,PATCH,DELETE
+          filters:
+            - name: JwtAuthFilter
+
+        # ── Ticket Service ───────────────────────────────────────────────────
         - id: ticket-service
-          uri: http://localhost:8083
+          uri: http://${TICKET_SERVICE_HOST:localhost}:8083
           predicates:
             - Path=/api/v1/tickets/**
+          filters:
+            - name: JwtAuthFilter
+
+        # ── Notification Service ─────────────────────────────────────────────
         - id: notification-service
-          uri: http://localhost:8084
+          uri: http://${NOTIF_SERVICE_HOST:localhost}:8084
           predicates:
-            - Path=/api/v1/notifications/**
+            - Path=/api/v1/notifications/**,/api/v1/chat/**
+          filters:
+            - name: JwtAuthFilter
+
+        # ── WebSocket ────────────────────────────────────────────────────────
+        - id: websocket
+          uri: ws://${NOTIF_SERVICE_HOST:localhost}:8084
+          predicates:
+            - Path=/ws/**
 
 management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,routes
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:eventcollab-super-secret-key-must-be-at-least-256-bits-long-for-security}
+
+logging:
+  level:
+    com.eventcollab: DEBUG
+    org.springframework.cloud.gateway: INFO
