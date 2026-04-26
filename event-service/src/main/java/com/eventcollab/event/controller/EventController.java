@@ -48,6 +48,18 @@ public class EventController {
                 .body(ApiResponse.ok("Evenement cree avec succes", eventService.create(req)));
     }
 
+    // Endpoint interne appelé par ticket-service lors d'une réservation
+    @PostMapping("/{id}/capacity/increment")
+    public ResponseEntity<ApiResponse<EventResponse>> increment(@PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponse.ok(eventService.incrementCapacity(id)));
+    }
+
+    // Endpoint interne appelé par ticket-service lors d'une annulation
+    @PostMapping("/{id}/capacity/decrement")
+    public ResponseEntity<ApiResponse<EventResponse>> decrement(@PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponse.ok(eventService.decrementCapacity(id)));
+    }
+
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ApiResponse<EventResponse> update(

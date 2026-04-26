@@ -1,4 +1,4 @@
-package com.eventcollab.event.security;
+package com.eventcollab.ticket.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
@@ -25,8 +25,6 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("GET", "/api/v1/events", "/api/v1/events/**").permitAll()
-                        .requestMatchers("POST", "/api/v1/events/*/capacity/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
