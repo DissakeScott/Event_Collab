@@ -5,6 +5,7 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
 import { ApiResponse } from '../models/api.model';
+import { NotificationService } from './notification.service'; // <-- NOUVEAU : Importation du service
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,7 +15,11 @@ export class AuthService {
   // Signal initialisé depuis localStorage au démarrage
   currentUser = signal<User | null>(this.loadUser());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private notificationService: NotificationService // <-- NOUVEAU : Injection du service
+  ) {}
 
   login(req: LoginRequest): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API}/login`, req).pipe(
@@ -29,6 +34,10 @@ export class AuthService {
   }
 
   logout(): void {
+    // --- NOUVEAU : Couper le WebSocket à la déconnexion ---
+    this.notificationService.disconnectWebSocket();
+    // ------------------------------------------------------
+
     localStorage.removeItem('ec_token');
     localStorage.removeItem('ec_refresh');
     localStorage.removeItem('ec_user');
@@ -49,6 +58,10 @@ export class AuthService {
     localStorage.setItem('ec_refresh', auth.refreshToken);
     localStorage.setItem('ec_user',    JSON.stringify(auth.user));
     this.currentUser.set(auth.user);
+
+    // --- NOUVEAU : Allumer le WebSocket une fois connecté ---
+    this.notificationService.connectWebSocket();
+    // --------------------------------------------------------
   }
 
   private loadUser(): User | null {

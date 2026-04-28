@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Notification } from '../../../core/models/notification.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-notification-list',
@@ -55,16 +56,36 @@ import { Notification } from '../../../core/models/notification.model';
     </div>
   `
 })
-export class NotificationListComponent implements OnInit {
+export class NotificationListComponent implements OnInit, OnDestroy {
   notifs: Notification[] = [];
   loading = true;
   unread = 0;
+  private wsSub?: Subscription;
 
   constructor(private svc: NotificationService) {}
 
   ngOnInit() {
+    this.loadNotifications();
+
+    // On écoute le serveur temps réel. Dès qu'il s'active, on recharge les données silencieusement !
+    this.wsSub = this.svc.refreshList$.subscribe(() => {
+      this.loadNotifications();
+    });
+  }
+
+  ngOnDestroy() {
+    // Très important pour éviter les fuites de mémoire quand on quitte la page
+    this.wsSub?.unsubscribe();
+  }
+
+  // J'ai isolé ton appel HTTP dans une méthode pour pouvoir le réutiliser
+  loadNotifications() {
     this.svc.getAll().subscribe({
-      next: r => { this.notifs = r.data; this.unread = r.data.filter(n=>!n.read).length; this.loading = false; },
+      next: r => { 
+        this.notifs = r.data; 
+        this.unread = r.data.filter(n=>!n.read).length; 
+        this.loading = false; 
+      },
       error: () => { this.loading = false; }
     });
   }
@@ -72,8 +93,9 @@ export class NotificationListComponent implements OnInit {
   read(n: Notification) {
     if (n.read) return;
     this.svc.markAsRead(n.id).subscribe(() => {
-      n.read = true; this.unread--;
-      this.svc.unreadCount.update(c => Math.max(0, c-1));
+      n.read = true; 
+      this.unread--;
+      this.svc.unreadCount.update(c => Math.max(0, c - 1));
     });
   }
 
@@ -81,6 +103,7 @@ export class NotificationListComponent implements OnInit {
     this.svc.markAllAsRead().subscribe(() => {
       this.notifs.forEach(n => n.read = true);
       this.unread = 0;
+      this.svc.unreadCount.set(0); // On remet aussi la cloche à zéro
     });
   }
 }

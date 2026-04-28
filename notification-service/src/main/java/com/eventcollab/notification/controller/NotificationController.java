@@ -52,7 +52,7 @@ public class NotificationController {
 
     // POST /api/v1/notifications/send — envoyer une notif (inter-service)
     @PostMapping("/send")
-    @PreAuthorize("hasRole('ADMIN')")
+    
     public ResponseEntity<ApiResponse<NotificationResponse>> send(
             @Valid @RequestBody SendNotificationRequest req) {
         return ResponseEntity.status(HttpStatus.CREATED)

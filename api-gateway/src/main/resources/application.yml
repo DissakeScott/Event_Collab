@@ -73,7 +73,7 @@ spring:
 
         # ── WebSocket ────────────────────────────────────────────────────────
         - id: websocket
-          uri: ws://${NOTIF_SERVICE_HOST:localhost}:8084
+          uri: http://${NOTIF_SERVICE_HOST:localhost}:8084
           predicates:
             - Path=/ws/**
 

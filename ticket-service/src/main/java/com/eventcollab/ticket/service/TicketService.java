@@ -2,6 +2,7 @@ package com.eventcollab.ticket.service;
 
 import com.eventcollab.common.exception.BusinessException;
 import com.eventcollab.ticket.client.EventServiceClient;
+import com.eventcollab.ticket.client.NotificationServiceClient;
 import com.eventcollab.ticket.domain.*;
 import com.eventcollab.ticket.dto.*;
 import com.eventcollab.ticket.repository.TicketRepository;
@@ -24,7 +25,7 @@ public class TicketService {
     private final TicketRepository     ticketRepository;
     private final EventServiceClient   eventClient;
     private final QrCodeService        qrCodeService;
-
+    private final NotificationServiceClient notificationClient;
     // -----------------------------------------------------------------------
     // RESERVER un billet
     // -----------------------------------------------------------------------
@@ -78,6 +79,22 @@ public class TicketService {
 
         log.info("Billet reserve : ticket={} event={} user={}",
                 ticket.getId(), req.getEventId(), userEmail);
+
+         // --- NOUVEAU : Envoi de la notification ---
+    try {
+        notificationClient.send(NotificationRequest.builder()
+                .userId(userId)
+                .userEmail(userEmail)
+                .type("TICKET_BOOKED")
+                .title("Billet Confirmé !")
+                .message("Votre réservation est confirmée. Votre billet n° " + ticket.getId() + " est disponible.")
+                .sendEmail(false) // Mets true si ton serveur mail est configuré
+                .build());
+        log.info("Notification envoyée au service pour le ticket {}", ticket.getId());
+    } catch (Exception e) {
+        log.error("Erreur lors de l'envoi de la notification : {}", e.getMessage());
+    }
+    // ------------------------------------------       
 
         return toResponse(ticket);
     }

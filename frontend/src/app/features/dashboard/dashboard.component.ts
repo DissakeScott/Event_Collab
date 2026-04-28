@@ -59,7 +59,7 @@ import { Ticket } from '../../core/models/ticket.model';
             </div>
             <div class="form-group">
               <label>Lieu</label>
-              <input class="form-control" formControlName="location" placeholder="Paris, France">
+              <input class="form-control" formControlName="location" placeholder="Laval, France">
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div class="form-group">
