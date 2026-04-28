@@ -31,6 +31,10 @@ import { Ticket } from '../../../core/models/ticket.model';
           @for (t of tickets; track t.id) {
             <div class="card" style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center">
               <div style="display:flex;flex-direction:column;gap:10px">
+                
+                <div style="font-size:18px;font-weight:800;color:var(--primary);margin-bottom:4px;">
+                  {{ t.eventTitle || 'Événement non spécifié' }}
+                </div>
                 <div style="display:flex;align-items:center;gap:12px">
                   <span class="badge" [class]="statusBadge(t.status)">{{ t.status }}</span>
                   <span style="font-size:13px;color:var(--text-dim)">#{{ t.id.slice(0,8).toUpperCase() }}</span>

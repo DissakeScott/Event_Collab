@@ -221,9 +221,19 @@ public class TicketService {
     }
 
     private TicketResponse toResponse(Ticket ticket) {
+
+        // Récupérer les infos de l'événement pour avoir le titre
+    String title = "Événement inconnu";
+    try {
+        title = eventClient.getEvent(ticket.getEventId()).getTitle();
+    } catch (Exception e) {
+        log.warn("Impossible de récupérer le titre pour l'event {}", ticket.getEventId());
+    }
+
         return TicketResponse.builder()
                 .id(ticket.getId())
                 .eventId(ticket.getEventId())
+                .eventTitle(title)
                 .userId(ticket.getUserId())
                 .userEmail(ticket.getUserEmail())
                 .status(ticket.getStatus().name())

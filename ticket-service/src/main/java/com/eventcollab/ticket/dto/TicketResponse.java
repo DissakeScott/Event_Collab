@@ -11,6 +11,7 @@ import java.util.UUID;
 public class TicketResponse {
     private UUID          id;
     private UUID          eventId;
+    private String eventTitle;
     private UUID          userId;
     private String        userEmail;
     private String        status;
