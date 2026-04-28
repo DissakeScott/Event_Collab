@@ -1,3 +1,16 @@
+# 🎟️ EventCollab - Plateforme Collaborative de Gestion d'Événements
+
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![WebSockets](https://img.shields.io/badge/WebSockets-000000?style=for-the-badge&logo=socket.io&logoColor=white)
+
+
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-29-59" src="https://github.com/user-attachments/assets/2e583222-f78e-429b-8fdc-8264ae6edd98" />
+<p></p>
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-30-12" src="https://github.com/user-attachments/assets/dfe3e3b7-00a9-4b3b-a137-54016f174534" />
+<p></p>
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-31-01" src="https://github.com/user-attachments/assets/405f7087-df90-4090-838d-c281d443ffb2" />
 <img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-24-48" src="https://github.com/user-attachments/assets/b23b96a5-d589-4061-b7f6-f9970b6c50c9" />
 <p></p>
 <img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-00-22" src="https://github.com/user-attachments/assets/0c18b42a-0526-4e52-aab4-b5907271db47" />
@@ -8,13 +21,6 @@
 <p></p>
 
 
-
-# 🎟️ EventCollab - Plateforme Collaborative de Gestion d'Événements
-
-![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![WebSockets](https://img.shields.io/badge/WebSockets-000000?style=for-the-badge&logo=socket.io&logoColor=white)
 
 EventCollab est une application Full-Stack orientée **Microservices** permettant la création, la gestion et la réservation d'événements. Elle intègre des fonctionnalités avancées de collaboration en temps réel telles qu'un chat en direct et des notifications instantanées.
 
