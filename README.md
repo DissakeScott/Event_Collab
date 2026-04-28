@@ -1,3 +1,12 @@
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-24-48" src="https://github.com/user-attachments/assets/b23b96a5-d589-4061-b7f6-f9970b6c50c9" />
+<p></p>
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-00-22" src="https://github.com/user-attachments/assets/0c18b42a-0526-4e52-aab4-b5907271db47" />
+<p></p>
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-21-24" src="https://github.com/user-attachments/assets/7d33ddb6-c90f-4943-ac6f-d3656353d000" />
+<p></p>
+<img width="3440" height="1408" alt="Capture d’écran du 2026-04-28 16-00-10" src="https://github.com/user-attachments/assets/c45b926f-45d3-453b-a1e2-698cce902186" />
+<p></p>
+
 
 
 # 🎟️ EventCollab - Plateforme Collaborative de Gestion d'Événements
