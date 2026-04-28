@@ -128,6 +128,20 @@ public class TicketService {
 
         ticket.setQrCode(null); // invalider le QR code
 
+        try {
+            notificationClient.send(NotificationRequest.builder()
+                    .userId(ticket.getUserId())
+                    .userEmail(ticket.getUserEmail())
+                    .type("TICKET_CANCELLED")
+                    .title("Billet Annulé")
+                    .message("L'annulation de votre billet pour l'événement " + ticket.getEventId() + " a bien été prise en compte.")
+                    .sendEmail(false)
+                    .build());
+            log.info("Notification d'annulation envoyée au service pour le ticket {}", ticket.getId());
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de la notification d'annulation : {}", e.getMessage());
+        }
+
         log.info("Billet annule : ticket={} user={}", ticketId, userEmail());
         return toResponse(ticket);
     }
