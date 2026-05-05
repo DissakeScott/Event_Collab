@@ -7,33 +7,23 @@ spring:
 
   cloud:
     gateway:
-      # Configuration globale CORS
       globalcors:
         cors-configurations:
           "[/**]":
             allowedOriginPatterns: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - PATCH
-              - DELETE
-              - OPTIONS
+            allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
 
-      # Routes vers chaque microservice
       routes:
-
         # ── User Service ────────────────────────────────────────────────────
         - id: user-service-auth
-          uri: http://${USER_SERVICE_HOST:localhost}:8081
+          uri: http://user-service:8081
           predicates:
             - Path=/api/v1/auth/**
-          # Pas de filtre JWT — endpoints publics (register, login, refresh)
 
         - id: user-service-users
-          uri: http://${USER_SERVICE_HOST:localhost}:8081
+          uri: http://user-service:8081
           predicates:
             - Path=/api/v1/users/**
           filters:
@@ -41,14 +31,13 @@ spring:
 
         # ── Event Service ────────────────────────────────────────────────────
         - id: event-service-public
-          uri: http://${EVENT_SERVICE_HOST:localhost}:8082
+          uri: http://event-service:8082
           predicates:
             - Path=/api/v1/events/**
             - Method=GET
-          # Lecture publique sans JWT
 
         - id: event-service-protected
-          uri: http://${EVENT_SERVICE_HOST:localhost}:8082
+          uri: http://event-service:8082
           predicates:
             - Path=/api/v1/events/**
             - Method=POST,PUT,PATCH,DELETE
@@ -57,7 +46,7 @@ spring:
 
         # ── Ticket Service ───────────────────────────────────────────────────
         - id: ticket-service
-          uri: http://${TICKET_SERVICE_HOST:localhost}:8083
+          uri: http://ticket-service:8083
           predicates:
             - Path=/api/v1/tickets/**
           filters:
@@ -65,7 +54,7 @@ spring:
 
         # ── Notification Service ─────────────────────────────────────────────
         - id: notification-service
-          uri: http://${NOTIF_SERVICE_HOST:localhost}:8084
+          uri: http://notification-service:8084
           predicates:
             - Path=/api/v1/notifications/**,/api/v1/chat/**
           filters:
@@ -73,7 +62,7 @@ spring:
 
         # ── WebSocket ────────────────────────────────────────────────────────
         - id: websocket
-          uri: http://${NOTIF_SERVICE_HOST:localhost}:8084
+          uri: http://notification-service:8084
           predicates:
             - Path=/ws/**
 
@@ -82,15 +71,13 @@ management:
     web:
       exposure:
         include: health,routes
-  endpoint:
-    health:
-      show-details: always
 
 app:
   jwt:
-    secret: ${JWT_SECRET:eventcollab-super-secret-key-must-be-at-least-256-bits-long-for-security}
+    # Doit être exactement le même secret partout !
+    secret: eventcollab-super-secret-key-must-be-at-least-256-bits-long-for-security
 
 logging:
   level:
-    com.eventcollab: DEBUG
+    com.eventcollab: INFO
     org.springframework.cloud.gateway: INFO

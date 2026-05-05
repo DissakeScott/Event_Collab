@@ -1,0 +1,110 @@
+version: '3.8'
+
+# 1. Définition de notre réseau privé
+networks:
+  ec-network:
+    driver: bridge
+
+services:
+  # --- LA BASE DE DONNÉES ---
+  postgres:
+    image: postgres:15-alpine
+    container_name: ec-postgres
+    environment:
+      POSTGRES_USER: eventcollab      
+      POSTGRES_PASSWORD: eventcollab  
+      POSTGRES_DB: events_db          
+    ports:
+      - "5433:5432"
+    networks:
+      - ec-network
+    volumes:
+      - pg-data:/var/lib/postgresql/data # Persistance des données
+
+  # --- LES MICROSERVICES ---
+  user-service:
+    build: ./user-service
+    container_name: ec-user-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/events_db
+      - SPRING_DATASOURCE_USERNAME=eventcollab
+      - SPRING_DATASOURCE_PASSWORD=eventcollab
+    depends_on:
+      - postgres
+    networks:
+      - ec-network
+
+  event-service:
+    build: ./event-service
+    container_name: ec-event-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/events_db
+      - SPRING_DATASOURCE_USERNAME=eventcollab
+      - SPRING_DATASOURCE_PASSWORD=eventcollab
+    depends_on:
+      - postgres
+    networks:
+      - ec-network
+
+  ticket-service:
+    build: ./ticket-service
+    container_name: ec-ticket-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/events_db
+      - SPRING_DATASOURCE_USERNAME=eventcollab
+      - SPRING_DATASOURCE_PASSWORD=eventcollab
+      # Variables spécifiques pour le WebClient de ce service
+      - APP_EVENT_SERVICE_URL=http://event-service:8082
+      - APP_NOTIFICATION_SERVICE_URL=http://notification-service:8084
+    depends_on:
+      - postgres
+      - event-service
+      - notification-service
+    networks:
+      - ec-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: ec-notification-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/events_db
+      - SPRING_DATASOURCE_USERNAME=eventcollab
+      - SPRING_DATASOURCE_PASSWORD=eventcollab
+    depends_on:
+      - postgres
+    networks:
+      - ec-network
+
+  # --- L'API GATEWAY ---
+  api-gateway:
+    build: ./api-gateway
+    container_name: ec-api-gateway
+    ports:
+      - "8080:8080" # On expose la passerelle vers l'extérieur (ton navigateur)
+    environment:
+      # Variables pour que le Gateway trouve les autres services par leur nom Docker
+      - USER_SERVICE_HOST=user-service
+      - EVENT_SERVICE_HOST=event-service
+      - TICKET_SERVICE_HOST=ticket-service
+      - NOTIF_SERVICE_HOST=notification-service
+    depends_on:
+      - user-service
+      - event-service
+      - ticket-service
+      - notification-service
+    networks:
+      - ec-network
+
+  # --- LE FRONTEND ANGULAR ---
+  frontend:
+    build: ./frontend
+    container_name: ec-frontend
+    ports:
+      - "4200:80" 
+    depends_on:
+      - api-gateway
+    networks:
+      - ec-network
+
+volumes:
+  pg-data:
